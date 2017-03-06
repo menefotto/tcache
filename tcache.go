@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type tCache struct {
+type Cache struct {
 	values map[string]*cacheObject
 	mtx    *sync.RWMutex
 	tick   *time.Ticker
@@ -26,9 +26,9 @@ type cacheObject struct {
 // New creates a new cache with minutes, which rappresent a interval at which
 // old values are deleted and exp ( in minutes as well ) which sets the expiration
 // time for values ( cannot be change once the cache has been istanciated ).
-func New(minutes time.Duration, exp time.Duration) *tCache {
-	cache := &tCache{
-		make(map[string]*cacheObject{}),
+func New(minutes time.Duration, exp time.Duration) *Cache {
+	cache := &Cache{
+		make(map[string]*cacheObject, 0),
 		&sync.RWMutex{},
 		time.NewTicker(time.Minute * minutes),
 		make(chan bool, 1),
@@ -44,7 +44,7 @@ func (c *Cache) Put(key string, v interface{}) {
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
 
-	c.values[key] = append(c.values[key], &cacheObject{v, time.Now()})
+	c.values[key] = &cacheObject{v, time.Now()}
 }
 
 // Get give you back the value assumining it hasn't be purged yet
@@ -69,7 +69,7 @@ func (c *Cache) purger() {
 	go func() {
 		for {
 			select {
-			case stop := <-c.done:
+			case <-c.done:
 				c.tick.Stop()
 				return
 
