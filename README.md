@@ -1,1 +1,1 @@
-# tcache \n read the docs inside 
+# tcache, simple cache implementaion with expiration. Read the docs.
