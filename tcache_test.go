@@ -6,7 +6,7 @@ import (
 )
 
 func TestCachePutGet(t *testing.T) {
-	tc := New(1, 2)
+	tc := New(1, 1)
 	defer tc.Stop()
 
 	tc.Put("key", "value")
@@ -21,12 +21,12 @@ func TestCachePutGet(t *testing.T) {
 }
 
 func TestExpiration(t *testing.T) {
-	tc := New(1, 2)
+	tc := New(1, 1)
 	defer tc.Stop()
 
 	tc.Put("key", "value")
 
-	time.Sleep(3 * time.Minute)
+	time.Sleep(70 * time.Second)
 
 	_, ok := tc.Get("key")
 	if ok {
